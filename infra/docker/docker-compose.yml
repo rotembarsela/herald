@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  client:
+    build:
+      context: ../../apps/client
+      dockerfile: ../../infra/docker/client/Dockerfile
+    container_name: nextjs-client
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../../apps/client:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - server
+
+  server:
+    build:
+      context: ../../apps/server
+      dockerfile: ../../infra/docker/server/Dockerfile
+    container_name: go-server
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../../apps/server:/app
+    environment:
+      - GO_ENV=development
+    depends_on:
+      - database
+
+  database:
+    image: postgres:16-alpine
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

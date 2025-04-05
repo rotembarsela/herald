@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@herald/ui": ["packages/ui/src"],
+      "@herald/ui/*": ["packages/ui/src/*"]
+    }
+  },
+  "references": [{ "path": "apps/client" }, { "path": "packages/ui" }]
+}

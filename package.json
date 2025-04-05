@@ -1,0 +1,24 @@
+{
+  "name": "herald",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "packages/*"
+    ]
+  },
+  "scripts": {
+    "dev:client": "pnpm --filter ./apps/client dev",
+    "dev:ui": "pnpm --filter ./packages/ui dev",
+    "storybook": "pnpm --filter ./packages/ui storybook",
+    "build:ui": "pnpm --filter ./packages/ui build",
+    "build:storybook": "pnpm --filter ./packages/ui build-storybook",
+    "lint": "pnpm -r lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "prettier": "^3.5.0",
+    "typescript": "^5.8.0"
+  }
+}
