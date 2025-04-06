@@ -6,24 +6,25 @@ import (
 	"github.com/rotembarsela/herald/helpers"
 )
 
-func MethodHandler(method string, handlerFunc http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func MethodHandler(method string, handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != method {
 			helpers.WriteError(w, http.StatusMethodNotAllowed, "invalid_request_error", "method_not_allowed", "Method not allowed")
 			return
 		}
-		handlerFunc(w, r)
-	}
+		handler.ServeHTTP(w, r)
+	})
 }
 
-func MethodHandlers(methods []string, handlerFunc http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+// For multiple methods
+func MethodHandlers(methods []string, handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		for _, m := range methods {
 			if r.Method == m {
-				handlerFunc(w, r)
+				handler.ServeHTTP(w, r)
 				return
 			}
 		}
 		helpers.WriteError(w, http.StatusMethodNotAllowed, "invalid_request_error", "method_not_allowed", "Method not allowed")
-	}
+	})
 }
