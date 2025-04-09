@@ -3,45 +3,62 @@ version: "3.8"
 services:
   client:
     build:
-      context: ../../apps/client
-      dockerfile: ../../infra/docker/client/Dockerfile
+      context: .
+      dockerfile: infra/docker/client/Dockerfile
     container_name: nextjs-client
     ports:
       - "3000:3000"
     volumes:
-      - ../../apps/client:/app
-      - /app/node_modules
+      - ./apps/client:/app/apps/client
+      - ./packages/ui:/app/packages/ui
+      - /app/apps/client/node_modules
     environment:
       - NODE_ENV=development
     depends_on:
       - server
+    networks:
+      - herald-network
 
   server:
     build:
-      context: ../../apps/server
-      dockerfile: ../../infra/docker/server/Dockerfile
+      context: .
+      dockerfile: infra/docker/server/Dockerfile
     container_name: go-server
     ports:
       - "8080:8080"
     volumes:
-      - ../../apps/server:/app
+      - ./apps/server:/app/apps/server
     environment:
       - GO_ENV=development
+      - DB_USER=myuser
+      - DB_PASS=mypassword
+      - DB_NAME=mydb
+      - DB_HOST=database
+      - DB_PORT=5432
     depends_on:
       - database
+    networks:
+      - herald-network
 
   database:
     image: postgres:16-alpine
     container_name: postgres-db
     restart: always
     environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: mydb
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=mydb
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d
+    networks:
+      - herald-network
 
 volumes:
   pgdata:
+
+networks:
+  herald-network:
+    driver: bridge
